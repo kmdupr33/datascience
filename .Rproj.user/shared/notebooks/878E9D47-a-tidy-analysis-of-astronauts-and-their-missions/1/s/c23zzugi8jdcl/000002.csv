@@ -1,0 +1,15 @@
+"0","tuesdata <- tidytuesdayR::tt_load('2020-07-14')"
+"1","
+"
+"1","	Downloading file 1 of 1: `astronauts.csv`
+"
+"1","
+"
+"0","tuesdata <- tidytuesdayR::tt_load(2020, week = 29)"
+"1","
+"
+"1","	Downloading file 1 of 1: `astronauts.csv`
+"
+"1","
+"
+"0","library(tidyverse)"

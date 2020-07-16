@@ -1,0 +1,5 @@
+"0","astronauts %>% "
+"0","  count(year_of_mission, wt = sum(nationality == ""U.S."")) %>% "
+"0","  ggplot(aes(year_of_mission, n)) +"
+"0","  geom_point() + "
+"0","  geom_smooth(se = F)"

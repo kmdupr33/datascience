@@ -1,0 +1,3 @@
+name: "philosophical hacker's data science posts"
+output:
+  tufte::tufte_html: default

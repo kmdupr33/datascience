@@ -1,0 +1,208 @@
+---
+title: "A Tidy Analysis of Astronauts and Their Missions"
+date: "`r Sys.Date()`"
+output:
+  tufte::tufte_html: default
+---
+
+```{r echo=F}
+theme_set(theme_classic())
+```
+
+
+# Introduction
+
+I live in Orlando Florida, which is less than an hour away from Cape Canaveral. As you might imagine, visiting the space center and watching launches is a "thing" we Orlando folks do fairly often.
+
+```{marginfigure}
+Me. A long time ago. Pretending to be too close to a launch by posing in front of a photo framed at the Kennedy Space Center. Meta.
+```
+
+![](./me-at-kennedy.png)
+
+I've also been getting into R and data science recently via Garrett Grolemund and Hadley Wickham's excellent _R for Data Science_. To apply the things I'm learning, I thought it'd be fun to analyze [this week's Tidy Tuesday astronauts dataset](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-07-14/readme.md). 
+
+I'll follow the analysis process suggested by _R for Data Science_:
+
+1. Import/Tidy
+1. Explore (via Transforming, Visualizing, and Modeling the data)
+1. Repeat exploration loop.
+1. Communicate results.
+
+If you're not interested in the journey, you can skip to [the results](#results). The graphs are cleaner and there's no code to clutter things.
+
+# Load and Tidy
+
+```{r message=F}
+tuesdata <- tidytuesdayR::tt_load('2020-07-14')
+library(tidyverse)
+```
+Let's `glimpse` our data:
+
+```{r}
+astronauts <- tuesdata$astronauts 
+glimpse(astronauts)
+```
+
+Each row is an astronaut and the mission they accomplished. Columns are variables whose meaning is fairly clear from the name, with the exception of `field21`. 
+
+Let's rename it. The docs say that it represents "Instances of EVA by mission.":
+
+```{r}
+astronauts <- astronauts %>% 
+  rename(evas_by_mission = field21)
+```
+
+
+# Exploration Loop 1
+
+I'm curious what the spread of astronauts is by sex.
+
+```{r}
+astronauts %>% 
+  ggplot(aes(sex)) +
+  geom_bar()
+```
+
+Unfortunately, this isn't surprising. I wonder if the ratio of male to female astronauts has become more equal over time.[^1] Let's see:
+
+[^1]: I'm going to have a daughter soon, and if she wants to be an astronaut, I sure hope she doesn't have to deal with any bias.
+
+```{r}
+astronauts %>%
+  ggplot(aes(year_of_mission, color = sex)) +
+  geom_bar()
+```
+
+It's not crystal clear from here whether the ratio has improved over time. Let's confirm explicitly by creating, plotting, and fitting a line to a ratio variable.
+
+```{r}
+astronauts %>%
+  group_by(year_of_mission) %>% 
+  summarise(ratio = sum(sex == "female") / sum(sex == "male")) %>% 
+  ggplot(aes(year_of_mission, ratio)) +
+  geom_point() + 
+  geom_smooth(se = F)
+```
+Looks like there was more equality since the 60s, but there may be some tapering off starting in the 2000s. 
+
+What the heck happened in ~1960? That's an unusually high ratio.  
+
+```{r}
+astronauts %>% 
+  filter(between(year_of_mission, 1960, 1970)) %>% 
+  group_by(year_of_mission) %>% 
+  count(sex)
+```
+
+Ah. Only three astronauts went on missions in 1963 and one of them was female. Makes sense now.
+
+# Exploration Loop 2
+
+I'm curious what the spread of astronauts is by nationality.
+
+```{r}
+astronauts %>% 
+  ggplot(aes(nationality)) +
+  geom_bar()
+```
+
+That's not useful. Let's drop astronauts who appear less than 10 times in the dataset, flip the axis, and sort.
+
+```{r}
+astronauts %>% 
+  add_count(nationality) %>% 
+  filter(n > 10) %>% 
+  ggplot(aes(x = fct_reorder(nationality, n))) +
+  geom_bar() +
+  coord_flip()
+```
+
+Better. Looks like the US dominates missions overall. 
+
+Let's try looking at ratios over time again:
+
+```{r}
+astronauts %>%
+  group_by(year_of_mission) %>% 
+  summarise(ratio = sum(nationality == "U.S.") / n()) %>% 
+  ggplot(aes(year_of_mission, ratio)) +
+  geom_point() + 
+  geom_smooth(se = F)
+```
+
+Interesting. I didn't realize the U.S. peaked in terms of share of astronauts sent to space in the mid-90s. This makes me wonder how the number of U.S. missions have changed over time.
+
+```{r}
+astronauts %>% 
+  count(year_of_mission, wt = sum(nationality == "U.S.")) %>% 
+  ggplot(aes(year_of_mission, n)) +
+  geom_point() + 
+  geom_smooth(se = F)
+```
+Super interesting! I remember thinking that Obama's shutting of the shuttle program would be an inflection point of NASA's activity, but this suggests that the inflection point was before Obama was even elected: ~1994.
+
+# Results
+
+This data set suggests three interesting conclusions:
+
+## 1. Female astronauts have made up a minor, but increasing share of astronauts since the 60s, but that trend has reversed since the late 90s
+
+You can kind of see this in this graph:
+
+```{r echo=F}
+astronauts %>%
+  ggplot(aes(year_of_mission, color = sex)) +
+  geom_bar() +
+  labs(title = "Share of Female Astronauts from 1960-2020",
+       subtitle = "(color-coded by sex)",
+       x = "Year of Mission",
+       y = "Number of Astronauts")
+```
+
+But it becomes very clear in this graph:
+
+```{r echo=F, message=F}
+astronauts %>%
+  group_by(year_of_mission) %>% 
+  summarise(ratio = sum(sex == "female") / sum(sex == "male")) %>% 
+  ggplot(aes(year_of_mission, ratio)) +
+  geom_point() + 
+  geom_smooth(se = F) +
+  labs(
+    title = "Ratio of female to male astronauts over time",
+    x = "Year",
+    y = "Ratio"
+    )
+```
+
+## 2. The U.S.'s dominance in share of astronauts ended in the late 90s
+
+```{r echo=F, message=F}
+astronauts %>%
+  group_by(year_of_mission) %>% 
+  summarise(ratio = sum(nationality == "U.S.") / n()) %>% 
+  ggplot(aes(year_of_mission, ratio)) +
+  geom_point() + 
+  geom_smooth(se = F) +
+  labs(
+    title = "Ratio of U.S. astronauts over time",
+    x = "Year",
+    y = "Ratio"
+  )
+```
+
+## 3. The raw number of U.S. astronauts on missions has been in decline since the late 90s, long before Obama [cancelled the Constellation Program](https://en.wikipedia.org/wiki/Constellation_program)
+
+```{r echo=F, message=F}
+astronauts %>% 
+  count(year_of_mission, wt = sum(nationality == "U.S.")) %>% 
+  ggplot(aes(year_of_mission, n)) +
+  geom_point() + 
+  geom_smooth(se = F) +
+  labs(
+    title = "Number of US Astronauts on missions Over Time",
+    x = "Year",
+    y = "Number of US Astronauts on missions"
+  )
+```

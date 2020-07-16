@@ -1,0 +1,7 @@
+"0","theme_set(theme_classic(
+  fill = ""transparent""
+))
+"
+"2","Error in theme_classic(fill = ""transparent"") : 
+  unused argument (fill = ""transparent"")
+"

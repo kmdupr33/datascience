@@ -1,0 +1,4 @@
+"0","astronauts %>% "
+"0","  filter(between(year_of_mission, 1960, 1970)) %>% "
+"0","  group_by(year_of_mission) %>% "
+"0","  count(sex)"

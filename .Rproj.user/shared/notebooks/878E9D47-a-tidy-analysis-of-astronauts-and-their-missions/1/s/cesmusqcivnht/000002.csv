@@ -1,0 +1,37 @@
+"0","astronauts <- tuesdata$astronauts "
+"0","glimpse(astronauts)"
+"1","Rows: 1,277"
+"1",""
+"1","
+"
+"1","Columns: 24"
+"1",""
+"1","
+"
+"1","$ id                       [3m[38;5;246m<dbl>[39m[23m 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16…
+$ number                   [3m[38;5;246m<dbl>[39m[23m 1, 2, 3, 3, 4, 5, 5, 6, 6, 7, 7, 7, 8, 8, 9, 9, 9, 10…
+$ nationwide_number        [3m[38;5;246m<dbl>[39m[23m 1, 2, 1, 1, 2, 2, 2, 4, 4, 3, 3, 3, 4, 4, 5, 5, 5, 6,…
+$ name                     [3m[38;5;246m<chr>[39m[23m ""Gagarin, Yuri"", ""Titov, Gherman"", ""Glenn, John H., J…
+$ original_name            [3m[38;5;246m<chr>[39m[23m ""ГАГАРИН Юрий Алексеевич"", ""ТИТОВ Герман Степанович"",…
+$ sex                      [3m[38;5;246m<chr>[39m[23m ""male"", ""male"", ""male"", ""male"", ""male"", ""male"", ""male…
+$ year_of_birth            [3m[38;5;246m<dbl>[39m[23m 1934, 1935, 1921, 1921, 1925, 1929, 1929, 1930, 1930,…
+$ nationality              [3m[38;5;246m<chr>[39m[23m ""U.S.S.R/Russia"", ""U.S.S.R/Russia"", ""U.S."", ""U.S."", ""…
+$ military_civilian        [3m[38;5;246m<chr>[39m[23m ""military"", ""military"", ""military"", ""military"", ""mili…
+$ selection                [3m[38;5;246m<chr>[39m[23m ""TsPK-1"", ""TsPK-1"", ""NASA Astronaut Group 1"", ""NASA A…
+$ year_of_selection        [3m[38;5;246m<dbl>[39m[23m 1960, 1960, 1959, 1959, 1959, 1960, 1960, 1960, 1960,…
+$ mission_number           [3m[38;5;246m<dbl>[39m[23m 1, 1, 1, 2, 1, 1, 2, 1, 2, 1, 2, 3, 1, 2, 1, 2, 3, 1,…
+$ total_number_of_missions [3m[38;5;246m<dbl>[39m[23m 1, 1, 2, 2, 1, 2, 2, 2, 2, 3, 3, 3, 2, 2, 3, 3, 3, 1,…
+$ occupation               [3m[38;5;246m<chr>[39m[23m ""pilot"", ""pilot"", ""pilot"", ""PSP"", ""Pilot"", ""pilot"", ""…
+$ year_of_mission          [3m[38;5;246m<dbl>[39m[23m 1961, 1961, 1962, 1998, 1962, 1962, 1970, 1962, 1974,…
+$ mission_title            [3m[38;5;246m<chr>[39m[23m ""Vostok 1"", ""Vostok 2"", ""MA-6"", ""STS-95"", ""Mercury-At…
+$ ascend_shuttle           [3m[38;5;246m<chr>[39m[23m ""Vostok 1"", ""Vostok 2"", ""MA-6"", ""STS-95"", ""Mercury-At…
+$ in_orbit                 [3m[38;5;246m<chr>[39m[23m ""Vostok 2"", ""Vostok 2"", ""MA-6"", ""STS-95"", ""Mercury-At…
+$ descend_shuttle          [3m[38;5;246m<chr>[39m[23m ""Vostok 3"", ""Vostok 2"", ""MA-6"", ""STS-95"", ""Mercury-At…
+$ hours_mission            [3m[38;5;246m<dbl>[39m[23m 1.77, 25.00, 5.00, 213.00, 5.00, 94.00, 424.00, 70.93…
+$ total_hrs_sum            [3m[38;5;246m<dbl>[39m[23m 1.77, 25.30, 218.00, 218.00, 5.00, 519.33, 519.33, 44…
+$ field21                  [3m[38;5;246m<dbl>[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+$ eva_hrs_mission          [3m[38;5;246m<dbl>[39m[23m 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00,…
+$ total_eva_hrs            [3m[38;5;246m<dbl>[39m[23m 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00,…"
+"1",""
+"1","
+"

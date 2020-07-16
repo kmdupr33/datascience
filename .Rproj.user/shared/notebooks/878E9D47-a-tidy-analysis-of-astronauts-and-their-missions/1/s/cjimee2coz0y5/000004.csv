@@ -1,0 +1,8 @@
+"0","astronauts %>%"
+"0","  group_by(year_of_mission) %>% "
+"0","  summarise(ratio = sum(nationality == ""U.S."") / n()) %>% "
+"0","  ggplot(aes(year_of_mission, ratio)) +"
+"0","  geom_point() + "
+"0","  geom_smooth(se = F)"
+"2","`summarise()` ungrouping output (override with `.groups` argument)
+"

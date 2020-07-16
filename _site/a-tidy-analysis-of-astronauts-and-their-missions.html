@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+<meta name="date" content="2020-07-16" />
+
+<title>A Tidy Analysis of Astronauts and Their Missions</title>
+
+<script src="site_libs/header-attrs/header-attrs.js"></script>
+<link href="site_libs/tufte-css/tufte-fonts.css" rel="stylesheet" />
+<link href="site_libs/tufte-css/tufte-background.css" rel="stylesheet" />
+<link href="site_libs/tufte-css/tufte-italics.css" rel="stylesheet" />
+<link href="site_libs/tufte-css/tufte.css" rel="stylesheet" />
+<link href="site_libs/highlightjs/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">A Tidy Analysis of Astronauts and Their Missions</h1>
+<h4 class="date">2020-07-16</h4>
+
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>I live in Orlando Florida, which is less than an hour away from Cape Canaveral. As you might imagine, visiting the space center and watching launches is a “thing” we Orlando folks do fairly often.</p>
+<p><label for="tufte-mn-1" class="margin-toggle">⊕</label><input type="checkbox" id="tufte-mn-1" class="margin-toggle"><span class="marginnote"><span style="display: block;">Me. A long time ago. Pretending to be too close to a launch by posing in front of a photo framed at the Kennedy Space Center. Meta.</span></span></p>
+<p><img src="me-at-kennedy.png" /></p>
+<p>I’ve also been getting into R and data science recently via Garrett Grolemund and Hadley Wickham’s excellent <em>R for Data Science</em>. To apply the things I’m learning, I thought it’d be fun to analyze <a href="https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-07-14/readme.md">this week’s Tidy Tuesday astronauts dataset</a>.</p>
+<p>I’ll follow the analysis process suggested by <em>R for Data Science</em>:</p>
+<ol style="list-style-type: decimal">
+<li>Import/Tidy</li>
+<li>Explore (via Transforming, Visualizing, and Modeling the data)</li>
+<li>Repeat exploration loop.</li>
+<li>Communicate results.</li>
+</ol>
+<p>If you’re not interested in the journey, you can skip to <a href="#results">the results</a>. The graphs are cleaner and there’s no code to clutter things.</p>
+</div>
+<div id="load-and-tidy" class="section level1">
+<h1>Load and Tidy</h1>
+<pre class="r"><code>tuesdata &lt;- tidytuesdayR::tt_load(&#39;2020-07-14&#39;)</code></pre>
+<pre><code>## 
+##  Downloading file 1 of 1: `astronauts.csv`</code></pre>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<p>Let’s <code>glimpse</code> our data:</p>
+<pre class="r"><code>astronauts &lt;- tuesdata$astronauts 
+glimpse(astronauts)</code></pre>
+<pre><code>## Rows: 1,277
+## Columns: 24
+## $ id                       &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, …
+## $ number                   &lt;dbl&gt; 1, 2, 3, 3, 4, 5, 5, 6, 6, 7, 7, 7, 8, 8, 9, 9, 9, 10, 11, …
+## $ nationwide_number        &lt;dbl&gt; 1, 2, 1, 1, 2, 2, 2, 4, 4, 3, 3, 3, 4, 4, 5, 5, 5, 6, 7, 7,…
+## $ name                     &lt;chr&gt; &quot;Gagarin, Yuri&quot;, &quot;Titov, Gherman&quot;, &quot;Glenn, John H., Jr.&quot;, &quot;…
+## $ original_name            &lt;chr&gt; &quot;ГАГАРИН Юрий Алексеевич&quot;, &quot;ТИТОВ Герман Степанович&quot;, &quot;Glen…
+## $ sex                      &lt;chr&gt; &quot;male&quot;, &quot;male&quot;, &quot;male&quot;, &quot;male&quot;, &quot;male&quot;, &quot;male&quot;, &quot;male&quot;, &quot;ma…
+## $ year_of_birth            &lt;dbl&gt; 1934, 1935, 1921, 1921, 1925, 1929, 1929, 1930, 1930, 1923,…
+## $ nationality              &lt;chr&gt; &quot;U.S.S.R/Russia&quot;, &quot;U.S.S.R/Russia&quot;, &quot;U.S.&quot;, &quot;U.S.&quot;, &quot;U.S.&quot;,…
+## $ military_civilian        &lt;chr&gt; &quot;military&quot;, &quot;military&quot;, &quot;military&quot;, &quot;military&quot;, &quot;military&quot;,…
+## $ selection                &lt;chr&gt; &quot;TsPK-1&quot;, &quot;TsPK-1&quot;, &quot;NASA Astronaut Group 1&quot;, &quot;NASA Astrona…
+## $ year_of_selection        &lt;dbl&gt; 1960, 1960, 1959, 1959, 1959, 1960, 1960, 1960, 1960, 1959,…
+## $ mission_number           &lt;dbl&gt; 1, 1, 1, 2, 1, 1, 2, 1, 2, 1, 2, 3, 1, 2, 1, 2, 3, 1, 1, 2,…
+## $ total_number_of_missions &lt;dbl&gt; 1, 1, 2, 2, 1, 2, 2, 2, 2, 3, 3, 3, 2, 2, 3, 3, 3, 1, 2, 2,…
+## $ occupation               &lt;chr&gt; &quot;pilot&quot;, &quot;pilot&quot;, &quot;pilot&quot;, &quot;PSP&quot;, &quot;Pilot&quot;, &quot;pilot&quot;, &quot;pilot&quot;…
+## $ year_of_mission          &lt;dbl&gt; 1961, 1961, 1962, 1998, 1962, 1962, 1970, 1962, 1974, 1962,…
+## $ mission_title            &lt;chr&gt; &quot;Vostok 1&quot;, &quot;Vostok 2&quot;, &quot;MA-6&quot;, &quot;STS-95&quot;, &quot;Mercury-Atlas 7&quot;…
+## $ ascend_shuttle           &lt;chr&gt; &quot;Vostok 1&quot;, &quot;Vostok 2&quot;, &quot;MA-6&quot;, &quot;STS-95&quot;, &quot;Mercury-Atlas 7&quot;…
+## $ in_orbit                 &lt;chr&gt; &quot;Vostok 2&quot;, &quot;Vostok 2&quot;, &quot;MA-6&quot;, &quot;STS-95&quot;, &quot;Mercury-Atlas 7&quot;…
+## $ descend_shuttle          &lt;chr&gt; &quot;Vostok 3&quot;, &quot;Vostok 2&quot;, &quot;MA-6&quot;, &quot;STS-95&quot;, &quot;Mercury-Atlas 7&quot;…
+## $ hours_mission            &lt;dbl&gt; 1.77, 25.00, 5.00, 213.00, 5.00, 94.00, 424.00, 70.93, 377.…
+## $ total_hrs_sum            &lt;dbl&gt; 1.77, 25.30, 218.00, 218.00, 5.00, 519.33, 519.33, 448.45, …
+## $ field21                  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ eva_hrs_mission          &lt;dbl&gt; 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00,…
+## $ total_eva_hrs            &lt;dbl&gt; 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00,…</code></pre>
+<p>Each row is an astronaut and the mission they accomplished. Columns are variables whose meaning is fairly clear from the name, with the exception of <code>field21</code>.</p>
+<p>Let’s rename it. The docs say that it represents “Instances of EVA by mission.”:</p>
+<pre class="r"><code>astronauts &lt;- astronauts %&gt;% 
+  rename(evas_by_mission = field21)</code></pre>
+</div>
+<div id="exploration-loop-1" class="section level1">
+<h1>Exploration Loop 1</h1>
+<p>I’m curious what the spread of astronauts is by sex.</p>
+<pre class="r"><code>astronauts %&gt;% 
+  ggplot(aes(sex)) +
+  geom_bar()</code></pre>
+<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-7-1.png" width="672"  /></p>
+<p>Unfortunately, this isn’t surprising. I wonder if the ratio of male to female astronauts has become more equal over time.<label for="tufte-sn-1" class="margin-toggle sidenote-number">1</label><input type="checkbox" id="tufte-sn-1" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">1</span> I’m going to have a daughter soon, and if she wants to be an astronaut, I sure hope she doesn’t have to deal with any bias.</span> Let’s see:</p>
+<pre class="r"><code>astronauts %&gt;%
+  ggplot(aes(year_of_mission, color = sex)) +
+  geom_bar()</code></pre>
+<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-8-1.png" width="672"  /></p>
+<p>It’s not crystal clear from here whether the ratio has improved over time. Let’s confirm explicitly by creating, plotting, and fitting a line to a ratio variable.</p>
+<pre class="r"><code>astronauts %&gt;%
+  group_by(year_of_mission) %&gt;% 
+  summarise(ratio = sum(sex == &quot;female&quot;) / sum(sex == &quot;male&quot;)) %&gt;% 
+  ggplot(aes(year_of_mission, ratio)) +
+  geom_point() + 
+  geom_smooth(se = F)</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-9-1.png" width="672"  /> Looks like there was more equality since the 60s, but there may be some tapering off starting in the 2000s.</p>
+<p>What the heck happened in ~1960? That’s an unusually high ratio.</p>
+<pre class="r"><code>astronauts %&gt;% 
+  filter(between(year_of_mission, 1960, 1970)) %&gt;% 
+  group_by(year_of_mission) %&gt;% 
+  count(sex)</code></pre>
+<pre><code>## # A tibble: 11 x 3
+## # Groups:   year_of_mission [10]
+##    year_of_mission sex        n
+##              &lt;dbl&gt; &lt;chr&gt;  &lt;int&gt;
+##  1            1961 male       2
+##  2            1962 male       5
+##  3            1963 female     1
+##  4            1963 male       2
+##  5            1964 male       3
+##  6            1965 male      12
+##  7            1966 male      10
+##  8            1967 male       1
+##  9            1968 male       7
+## 10            1969 male      23
+## 11            1970 male       5</code></pre>
+<p>Ah. Only three astronauts went on missions in 1963 and one of them was female. Make sense now.</p>
+</div>
+<div id="exploration-loop-2" class="section level1">
+<h1>Exploration Loop 2</h1>
+<p>I’m curious what the spread of astronauts is by nationality.</p>
+<pre class="r"><code>astronauts %&gt;% 
+  ggplot(aes(nationality)) +
+  geom_bar()</code></pre>
+<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-11-1.png" width="672"  /></p>
+<p>That’s not useful. Let’s drop astronauts who appear less than 10 times in the dataset, flip the axis, and sort.</p>
+<pre class="r"><code>astronauts %&gt;% 
+  add_count(nationality) %&gt;% 
+  filter(n &gt; 10) %&gt;% 
+  ggplot(aes(x = fct_reorder(nationality, n))) +
+  geom_bar() +
+  coord_flip()</code></pre>
+<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-12-1.png" width="672"  /></p>
+<p>Better. Looks like the US dominates missions overall.</p>
+<p>Let’s try looking at ratios over time again:</p>
+<pre class="r"><code>astronauts %&gt;%
+  group_by(year_of_mission) %&gt;% 
+  summarise(ratio = sum(nationality == &quot;U.S.&quot;) / n()) %&gt;% 
+  ggplot(aes(year_of_mission, ratio)) +
+  geom_point() + 
+  geom_smooth(se = F)</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-13-1.png" width="672"  /></p>
+<p>Interesting. I didn’t realize the U.S. peaked in terms of share of astronauts sent to space in the mid-90s. This makes me wonder how the number of U.S. missions have changed over time.</p>
+<pre class="r"><code>astronauts %&gt;% 
+  count(year_of_mission, wt = sum(nationality == &quot;U.S.&quot;)) %&gt;% 
+  ggplot(aes(year_of_mission, n)) +
+  geom_point() + 
+  geom_smooth(se = F)</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-14-1.png" width="672"  /> Super interesting! I remember thinking that Obama’s shutting of the shuttle program would be an inflection point of NASA’s activity, but this suggests that the inflection point was before Obama was even elected: ~1994.</p>
+</div>
+<div id="results" class="section level1">
+<h1>Results</h1>
+<p>This data set suggests three interesting conclusions:</p>
+<div id="female-astronauts-have-made-up-an-minor-but-increasing-share-of-astronauts-since-the-60s-but-that-trend-has-reversed-since-the-late-90s" class="section level2">
+<h2>1. Female astronauts have made up an minor, but increasing share of astronauts since the 60s, but that trend has reversed since the late 90s</h2>
+<p>You can kind of see this in this graph:</p>
+<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-15-1.png" width="672"  /></p>
+<p>But it becomes very clear in this graph:</p>
+<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-16-1.png" width="672"  /></p>
+</div>
+<div id="the-u.s.s-dominance-in-share-of-astronauts-ended-in-the-late-90s" class="section level2">
+<h2>2. The U.S.’s dominance in share of astronauts ended in the late 90s</h2>
+<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-17-1.png" width="672"  /></p>
+</div>
+<div id="the-raw-number-of-u.s.-astronauts-on-missions-has-been-in-decline-since-the-late-90s-long-before-obama-cancelled-the-constellation-program" class="section level2">
+<h2>3. The raw number of U.S. astronauts on missions has been in decline since the late 90s, long before Obama <a href="https://en.wikipedia.org/wiki/Constellation_program">cancelled the Constellation Program</a></h2>
+<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-18-1.png" width="672"  /></p>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

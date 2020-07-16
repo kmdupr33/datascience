@@ -1,0 +1,1 @@
+{"frames":[{"func":"theme_set(theme_classic(fill = \"transparent\"))","file":"","line_number":0,"end_line_number":0,"character_number":0,"end_character_number":0}],"message":"Error in theme_classic(fill = \"transparent\") : \n  unused argument (fill = \"transparent\")\n"}

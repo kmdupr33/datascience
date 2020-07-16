@@ -1,0 +1,8 @@
+"0","astronauts %>% "
+"0","  add_count(nationality) %>% "
+"0","  filter(n > 10) %>% "
+"0","  ggplot("
+"0","    aes(x = fct_reorder(nationality, n))"
+"0","    ) +"
+"0","  geom_bar() +"
+"0","  coord_flip()"
