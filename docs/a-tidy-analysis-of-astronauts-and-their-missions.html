@@ -158,7 +158,7 @@ glimpse(astronauts)</code></pre>
   ggplot(aes(nationality)) +
   geom_bar()</code></pre>
 <p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-10-1.png" width="672"  /></p>
-<p>That’s not useful. Let’s drop astronauts who appear less than 10 times in the dataset, flip the axis, and sort.</p>
+<p>That’s not useful. Let’s drop nationalities that appear less than 10 times in the dataset, flip the axis, and sort.</p>
 <pre class="r"><code>astronauts %&gt;% 
   add_count(nationality) %&gt;% 
   filter(n &gt; 10) %&gt;% 
@@ -167,7 +167,7 @@ glimpse(astronauts)</code></pre>
   coord_flip()</code></pre>
 <p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-11-1.png" width="672"  /></p>
 <p>Better. Looks like the US dominates missions overall.</p>
-<p>Let’s try looking at ratios over time again:</p>
+<p>Let’s try looking at the the ratio of US astronauts on missions over time:</p>
 <pre class="r"><code>astronauts %&gt;%
   group_by(year_of_mission) %&gt;% 
   summarise(ratio = sum(nationality == &quot;U.S.&quot;) / n()) %&gt;% 

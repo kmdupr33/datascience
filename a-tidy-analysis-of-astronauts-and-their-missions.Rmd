@@ -107,7 +107,7 @@ astronauts %>%
   geom_bar()
 ```
 
-That's not useful. Let's drop astronauts who appear less than 10 times in the dataset, flip the axis, and sort.
+That's not useful. Let's drop nationalities that appear less than 10 times in the dataset, flip the axis, and sort.
 
 ```{r}
 astronauts %>% 
@@ -120,7 +120,7 @@ astronauts %>%
 
 Better. Looks like the US dominates missions overall. 
 
-Let's try looking at ratios over time again:
+Let's try looking at the the ratio of US astronauts on missions over time:
 
 ```{r}
 astronauts %>%
