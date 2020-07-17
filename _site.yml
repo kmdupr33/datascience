@@ -1,3 +1,4 @@
 name: "philosophical hacker's data science posts"
+output_dir: docs
 output:
   tufte::tufte_html: default

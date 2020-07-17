@@ -15,13 +15,13 @@
 
 <title>A Tidy Analysis of Astronauts and Their Missions</title>
 
-<script src="site_libs/header-attrs/header-attrs.js"></script>
-<link href="site_libs/tufte-css/tufte-fonts.css" rel="stylesheet" />
-<link href="site_libs/tufte-css/tufte-background.css" rel="stylesheet" />
-<link href="site_libs/tufte-css/tufte-italics.css" rel="stylesheet" />
-<link href="site_libs/tufte-css/tufte.css" rel="stylesheet" />
-<link href="site_libs/highlightjs/default.css" rel="stylesheet" />
-<script src="site_libs/highlightjs/highlight.js"></script>
+<script src="site_libs/header-attrs-2.3/header-attrs.js"></script>
+<link href="site_libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="site_libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="site_libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="site_libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <script type="text/javascript">
@@ -73,7 +73,6 @@ if (window.hljs) {
 <pre class="r"><code>tuesdata &lt;- tidytuesdayR::tt_load(&#39;2020-07-14&#39;)</code></pre>
 <pre><code>## 
 ##  Downloading file 1 of 1: `astronauts.csv`</code></pre>
-<pre class="r"><code>library(tidyverse)</code></pre>
 <p>Let’s <code>glimpse</code> our data:</p>
 <pre class="r"><code>astronauts &lt;- tuesdata$astronauts 
 glimpse(astronauts)</code></pre>
@@ -114,12 +113,12 @@ glimpse(astronauts)</code></pre>
 <pre class="r"><code>astronauts %&gt;% 
   ggplot(aes(sex)) +
   geom_bar()</code></pre>
-<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-7-1.png" width="672"  /></p>
+<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-6-1.png" width="672"  /></p>
 <p>Unfortunately, this isn’t surprising. I wonder if the ratio of male to female astronauts has become more equal over time.<label for="tufte-sn-1" class="margin-toggle sidenote-number">1</label><input type="checkbox" id="tufte-sn-1" class="margin-toggle"><span class="sidenote"><span class="sidenote-number">1</span> I’m going to have a daughter soon, and if she wants to be an astronaut, I sure hope she doesn’t have to deal with any bias.</span> Let’s see:</p>
 <pre class="r"><code>astronauts %&gt;%
   ggplot(aes(year_of_mission, color = sex)) +
   geom_bar()</code></pre>
-<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-8-1.png" width="672"  /></p>
+<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-7-1.png" width="672"  /></p>
 <p>It’s not crystal clear from here whether the ratio has improved over time. Let’s confirm explicitly by creating, plotting, and fitting a line to a ratio variable.</p>
 <pre class="r"><code>astronauts %&gt;%
   group_by(year_of_mission) %&gt;% 
@@ -129,7 +128,7 @@ glimpse(astronauts)</code></pre>
   geom_smooth(se = F)</code></pre>
 <pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
 <pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
-<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-9-1.png" width="672"  /> Looks like there was more equality since the 60s, but there may be some tapering off starting in the 2000s.</p>
+<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-8-1.png" width="672"  /> Looks like there was more equality since the 60s, but there may be some tapering off starting in the 2000s.</p>
 <p>What the heck happened in ~1960? That’s an unusually high ratio.</p>
 <pre class="r"><code>astronauts %&gt;% 
   filter(between(year_of_mission, 1960, 1970)) %&gt;% 
@@ -150,7 +149,7 @@ glimpse(astronauts)</code></pre>
 ##  9            1968 male       7
 ## 10            1969 male      23
 ## 11            1970 male       5</code></pre>
-<p>Ah. Only three astronauts went on missions in 1963 and one of them was female. Make sense now.</p>
+<p>Ah. Only three astronauts went on missions in 1963 and one of them was female. Makes sense now.</p>
 </div>
 <div id="exploration-loop-2" class="section level1">
 <h1>Exploration Loop 2</h1>
@@ -158,7 +157,7 @@ glimpse(astronauts)</code></pre>
 <pre class="r"><code>astronauts %&gt;% 
   ggplot(aes(nationality)) +
   geom_bar()</code></pre>
-<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-11-1.png" width="672"  /></p>
+<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-10-1.png" width="672"  /></p>
 <p>That’s not useful. Let’s drop astronauts who appear less than 10 times in the dataset, flip the axis, and sort.</p>
 <pre class="r"><code>astronauts %&gt;% 
   add_count(nationality) %&gt;% 
@@ -166,7 +165,7 @@ glimpse(astronauts)</code></pre>
   ggplot(aes(x = fct_reorder(nationality, n))) +
   geom_bar() +
   coord_flip()</code></pre>
-<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-12-1.png" width="672"  /></p>
+<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-11-1.png" width="672"  /></p>
 <p>Better. Looks like the US dominates missions overall.</p>
 <p>Let’s try looking at ratios over time again:</p>
 <pre class="r"><code>astronauts %&gt;%
@@ -177,7 +176,7 @@ glimpse(astronauts)</code></pre>
   geom_smooth(se = F)</code></pre>
 <pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
 <pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
-<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-13-1.png" width="672"  /></p>
+<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-12-1.png" width="672"  /></p>
 <p>Interesting. I didn’t realize the U.S. peaked in terms of share of astronauts sent to space in the mid-90s. This makes me wonder how the number of U.S. missions have changed over time.</p>
 <pre class="r"><code>astronauts %&gt;% 
   count(year_of_mission, wt = sum(nationality == &quot;U.S.&quot;)) %&gt;% 
@@ -185,25 +184,25 @@ glimpse(astronauts)</code></pre>
   geom_point() + 
   geom_smooth(se = F)</code></pre>
 <pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
-<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-14-1.png" width="672"  /> Super interesting! I remember thinking that Obama’s shutting of the shuttle program would be an inflection point of NASA’s activity, but this suggests that the inflection point was before Obama was even elected: ~1994.</p>
+<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-13-1.png" width="672"  /> Super interesting! I remember thinking that Obama’s shutting of the shuttle program would be an inflection point of NASA’s activity, but this suggests that the inflection point was before Obama was even elected: ~1994.</p>
 </div>
 <div id="results" class="section level1">
 <h1>Results</h1>
 <p>This data set suggests three interesting conclusions:</p>
-<div id="female-astronauts-have-made-up-an-minor-but-increasing-share-of-astronauts-since-the-60s-but-that-trend-has-reversed-since-the-late-90s" class="section level2">
-<h2>1. Female astronauts have made up an minor, but increasing share of astronauts since the 60s, but that trend has reversed since the late 90s</h2>
+<div id="female-astronauts-have-made-up-a-minor-but-increasing-share-of-astronauts-since-the-60s-but-that-trend-has-reversed-since-the-late-90s" class="section level2">
+<h2>1. Female astronauts have made up a minor, but increasing share of astronauts since the 60s, but that trend has reversed since the late 90s</h2>
 <p>You can kind of see this in this graph:</p>
-<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-15-1.png" width="672"  /></p>
+<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-14-1.png" width="672"  /></p>
 <p>But it becomes very clear in this graph:</p>
-<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-16-1.png" width="672"  /></p>
+<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-15-1.png" width="672"  /></p>
 </div>
 <div id="the-u.s.s-dominance-in-share-of-astronauts-ended-in-the-late-90s" class="section level2">
 <h2>2. The U.S.’s dominance in share of astronauts ended in the late 90s</h2>
-<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-17-1.png" width="672"  /></p>
+<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-16-1.png" width="672"  /></p>
 </div>
 <div id="the-raw-number-of-u.s.-astronauts-on-missions-has-been-in-decline-since-the-late-90s-long-before-obama-cancelled-the-constellation-program" class="section level2">
 <h2>3. The raw number of U.S. astronauts on missions has been in decline since the late 90s, long before Obama <a href="https://en.wikipedia.org/wiki/Constellation_program">cancelled the Constellation Program</a></h2>
-<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-18-1.png" width="672"  /></p>
+<p><img src="a-tidy-analysis-of-astronauts-and-their-missions_files/figure-html/unnamed-chunk-17-1.png" width="672"  /></p>
 </div>
 </div>
 

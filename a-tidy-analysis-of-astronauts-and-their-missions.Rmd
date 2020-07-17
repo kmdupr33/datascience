@@ -5,7 +5,8 @@ output:
   tufte::tufte_html: default
 ---
 
-```{r echo=F}
+```{r echo=F, message=F}
+library(tidyverse)
 theme_set(theme_classic())
 ```
 
@@ -35,7 +36,6 @@ If you're not interested in the journey, you can skip to [the results](#results)
 
 ```{r message=F}
 tuesdata <- tidytuesdayR::tt_load('2020-07-14')
-library(tidyverse)
 ```
 Let's `glimpse` our data:
 
