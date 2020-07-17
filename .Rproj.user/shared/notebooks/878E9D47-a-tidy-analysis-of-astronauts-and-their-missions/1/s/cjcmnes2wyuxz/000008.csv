@@ -1,7 +1,0 @@
-"0","astronauts %>%"
-"0","  ggplot(aes(year_of_mission, color = sex)) +"
-"0","  geom_bar() +"
-"0","  labs(title = ""Share of Female Astronauts from 1960-2020"","
-"0","       subtitle = ""(color-coded by sex)"","
-"0","       x = ""Year of Mission"","
-"0","       y = ""Number of Astronauts"")"

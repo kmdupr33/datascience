@@ -70,7 +70,7 @@ Unfortunately, this isn't surprising. I wonder if the ratio of male to female as
 
 ```{r}
 astronauts %>%
-  ggplot(aes(year_of_mission, color = sex)) +
+  ggplot(aes(year_of_mission, fill = sex)) +
   geom_bar()
 ```
 
@@ -146,13 +146,13 @@ Super interesting! I remember thinking that Obama's shutting of the shuttle prog
 
 This data set suggests three interesting conclusions:
 
-## 1. Female astronauts have made up a minor, but increasing share of astronauts since the 60s, but that trend has reversed since the late 90s
+## 1. Female astronauts have made up a minor, but increasing share of astronauts since the 60s, but that trend has reversed since the 90s
 
 You can kind of see this in this graph:
 
 ```{r echo=F}
 astronauts %>%
-  ggplot(aes(year_of_mission, color = sex)) +
+  ggplot(aes(year_of_mission, fill = sex)) +
   geom_bar() +
   labs(title = "Share of Female Astronauts from 1960-2020",
        subtitle = "(color-coded by sex)",
@@ -164,10 +164,12 @@ But it becomes very clear in this graph:
 
 ```{r echo=F, message=F}
 astronauts %>%
-  group_by(year_of_mission) %>% 
-  summarise(ratio = sum(sex == "female") / sum(sex == "male")) %>% 
-  ggplot(aes(year_of_mission, ratio)) +
-  geom_point() + 
+  group_by(decade = 10 * year_of_mission %/% 10) %>% 
+  summarise(ratio = sum(sex == "female") / sum(sex == "male"), 
+            n_astronauts = n()
+            ) %>% 
+  ggplot(aes(decade, ratio)) +
+  geom_point(aes(size = n_astronauts)) + 
   geom_smooth(se = F) +
   labs(
     title = "Ratio of female to male astronauts over time",
@@ -176,18 +178,18 @@ astronauts %>%
     )
 ```
 
-## 2. The U.S.'s dominance in share of astronauts ended in the late 90s
+## 2. The U.S.'s dominance in share of astronauts ended in the 90s
 
 ```{r echo=F, message=F}
 astronauts %>%
-  group_by(year_of_mission) %>% 
+  group_by(decade = 10 * year_of_mission %/% 10) %>% 
   summarise(ratio = sum(nationality == "U.S.") / n()) %>% 
-  ggplot(aes(year_of_mission, ratio)) +
+  ggplot(aes(decade, ratio)) +
   geom_point() + 
   geom_smooth(se = F) +
   labs(
     title = "Ratio of U.S. astronauts over time",
-    x = "Year",
+    x = "Decade",
     y = "Ratio"
   )
 ```
