@@ -1,0 +1,94 @@
+---
+title: "A Tidy Analysis of Australian Animal Outcomes"
+date: "`r Sys.Date()`"
+output:
+  tufte::tufte_html: default
+---
+
+```{r echo=F, message=F}
+library(tidyverse)
+theme_set(theme_classic())
+```
+
+# Load and Tidy
+
+```{r message=F}
+animals <- tidytuesdayR::tt_load('2020-07-21')
+outcomes <- animals$animal_outcomes  
+complaints <- animals$animal_complaints
+brisbane_complaints <- animals$brisbane_complaints
+problems(outcomes)
+problems(complaints)
+problems(brisbane_complaints)
+```
+
+Looks like there's quite a few problems with the import from brisbane_complaints. Looks like it just wrongly assumed that responsible_office was a logical. Let's fix that.
+
+```{r}
+brisbane_complaints <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-21/brisbane_complaints.csv', 
+                                       col_types = cols(responsible_office = col_character()))
+```
+
+```{r}
+outcomes <- outcomes %>% 
+  pivot_longer(
+    c(ACT, NSW, NT, QLD, SA, TAS, VIC, WA), 
+    names_to="region", 
+    values_to="count"
+    ) %>% 
+  select(-Total)
+```
+
+# Exploration Loop 1
+
+I wonder how the number of euthanized animals varies by animal type and region.
+
+```{r fig.fullwidth = TRUE}
+outcomes %>% 
+  ggplot() +
+  geom_col(aes(year, count, fill = animal_type)) +
+  facet_grid(rows = vars(region), cols = vars(outcome))
+```
+That's not helpful. Let's drop year entirely and just look at the distributions across animal type and region.
+
+```{r fig.fullwidth = TRUE}
+outcomes %>% 
+  count(region, outcome, animal_type, wt = count) %>%
+  ggplot() +
+  geom_col(aes(animal_type, n, fill = animal_type)) +
+  facet_grid(rows = vars(region), cols = vars(outcome)) 
+```
+
+Still no good. Let's just graph the number of each outcome and facet by region, fill by animal type.
+
+```{r fig.fullwidth = TRUE}
+outcomes %>% 
+  count(region, outcome, animal_type, wt = count) %>%
+  ggplot(aes(fct_reorder(outcome, n), n, fill = animal_type)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 90)) +
+  facet_wrap(~ region)
+```
+
+Let's drop released as an outcome since it looks like that only applies to wildlife. We also don't really care about the animals that are "currently in care" or "in stock." We're just interested in what ultimately happened to them. According to [the RSPCA report](https://www.rspca.org.au/sites/default/files/RSPCA%20Report%20on%20animal%20outcomes%202018-2019.pdf), "transferred" means that the animal was transferred to a non-RSPCA. At that point, we don't know what happened to them, so we can drop them.
+
+```{r fig.fullwidth = TRUE}
+outcomes %>% 
+  count(region, outcome, animal_type, wt = count) %>%
+  filter(!outcome %in% c("Released", "In Stock", "Currently In Care", "Transferred", "Other")) %>% 
+  ggplot(aes(fct_reorder(outcome, n), n, fill = animal_type)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 90)) +
+  facet_wrap(~ region, scales = "free_y") +
+  labs(title = "Animal outcomes by Region from 1999-2008", 
+       subtitle = "(colored by animal type)",
+       x = "Outcome", 
+       y = "Number")
+```
+
+```{r}
+outcomes %>% 
+  count(year)
+```
+
+

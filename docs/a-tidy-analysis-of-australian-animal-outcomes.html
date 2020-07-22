@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+<meta name="date" content="2020-07-21" />
+
+<title>A Tidy Analysis of Australian Animal Outcomes</title>
+
+<script src="site_libs/header-attrs-2.3/header-attrs.js"></script>
+<link href="site_libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="site_libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="site_libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="site_libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">A Tidy Analysis of Australian Animal Outcomes</h1>
+<h4 class="date">2020-07-21</h4>
+
+
+
+<div id="load-and-tidy" class="section level1">
+<h1>Load and Tidy</h1>
+<pre class="r"><code>animals &lt;- tidytuesdayR::tt_load(&#39;2020-07-21&#39;)</code></pre>
+<pre><code>## 
+##  Downloading file 1 of 3: `animal_outcomes.csv`
+##  Downloading file 2 of 3: `animal_complaints.csv`
+##  Downloading file 3 of 3: `brisbane_complaints.csv`</code></pre>
+<pre><code>## Warning: 3933 parsing failures.
+##  row                col           expected                          actual         file
+## 8736 responsible_office 1/0/T/F/TRUE/FALSE City Safety (Animal Management) &lt;raw vector&gt;
+## 8737 responsible_office 1/0/T/F/TRUE/FALSE Environmental Management Team   &lt;raw vector&gt;
+## 8738 responsible_office 1/0/T/F/TRUE/FALSE Enforcement Animal Attack       &lt;raw vector&gt;
+## 8739 responsible_office 1/0/T/F/TRUE/FALSE Environmental Management Team   &lt;raw vector&gt;
+## 8740 responsible_office 1/0/T/F/TRUE/FALSE Environmental Management Team   &lt;raw vector&gt;
+## .... .................. .................. ............................... ............
+## See problems(...) for more details.</code></pre>
+<pre class="r"><code>outcomes &lt;- animals$animal_outcomes  
+complaints &lt;- animals$animal_complaints
+brisbane_complaints &lt;- animals$brisbane_complaints
+problems(outcomes)</code></pre>
+<pre><code>## [1] row      col      expected actual  
+## &lt;0 rows&gt; (or 0-length row.names)</code></pre>
+<pre class="r"><code>problems(complaints)</code></pre>
+<pre><code>## [1] row      col      expected actual  
+## &lt;0 rows&gt; (or 0-length row.names)</code></pre>
+<pre class="r"><code>problems(brisbane_complaints)</code></pre>
+<pre><code>## # A tibble: 3,933 x 5
+##      row col                expected           actual                          file        
+##    &lt;int&gt; &lt;chr&gt;              &lt;chr&gt;              &lt;chr&gt;                           &lt;chr&gt;       
+##  1  8736 responsible_office 1/0/T/F/TRUE/FALSE City Safety (Animal Management) &lt;raw vector&gt;
+##  2  8737 responsible_office 1/0/T/F/TRUE/FALSE Environmental Management Team   &lt;raw vector&gt;
+##  3  8738 responsible_office 1/0/T/F/TRUE/FALSE Enforcement Animal Attack       &lt;raw vector&gt;
+##  4  8739 responsible_office 1/0/T/F/TRUE/FALSE Environmental Management Team   &lt;raw vector&gt;
+##  5  8740 responsible_office 1/0/T/F/TRUE/FALSE Environmental Management Team   &lt;raw vector&gt;
+##  6  8741 responsible_office 1/0/T/F/TRUE/FALSE City Safety (Animal Management) &lt;raw vector&gt;
+##  7  8742 responsible_office 1/0/T/F/TRUE/FALSE Enforcement Animal Attack       &lt;raw vector&gt;
+##  8  8743 responsible_office 1/0/T/F/TRUE/FALSE City Safety (Animal Management) &lt;raw vector&gt;
+##  9  8744 responsible_office 1/0/T/F/TRUE/FALSE Environmental Management Team   &lt;raw vector&gt;
+## 10  8745 responsible_office 1/0/T/F/TRUE/FALSE Enforcement Animal Attack       &lt;raw vector&gt;
+## # … with 3,923 more rows</code></pre>
+<p>Looks like there’s quite a few problems with the import from brisbane_complaints. Looks like it just wrongly assumed that responsible_office was a logical. Let’s fix that.</p>
+<pre class="r"><code>glimpse(brisbane_complaints)</code></pre>
+<pre><code>## Rows: 31,330
+## Columns: 7
+## $ nature             &lt;chr&gt; &quot;Animal&quot;, &quot;Animal&quot;, &quot;Animal&quot;, &quot;Animal&quot;, &quot;Animal&quot;, &quot;Animal&quot;, &quot;Animal&quot;, &quot;Animal&quot;, &quot;Animal&quot;, &quot;Animal&quot;, &quot;Animal&quot;, &quot;Animal&quot;…
+## $ animal_type        &lt;chr&gt; &quot;Dog&quot;, &quot;Dog&quot;, &quot;Dog&quot;, &quot;Dog&quot;, &quot;Attack&quot;, &quot;Attack&quot;, &quot;Dog&quot;, &quot;Attack&quot;, &quot;Dog&quot;, &quot;Dog&quot;, &quot;Dog&quot;, &quot;Other Animal&quot;, &quot;Dog&quot;, &quot;Dog&quot;, &quot;D…
+## $ category           &lt;chr&gt; &quot;Fencing Issues&quot;, &quot;Fencing Issues&quot;, &quot;Defecating In Public&quot;, &quot;Fencing Issues&quot;, &quot;Attack On An Animal&quot;, &quot;Attack On A Pers…
+## $ suburb             &lt;chr&gt; &quot;SUNNYBANK&quot;, &quot;SUNNYBANK HILLS&quot;, &quot;SUNNYBANK&quot;, &quot;SUNNYBANK&quot;, &quot;CALAMVALE&quot;, &quot;STRETTON&quot;, &quot;ANNERLEY&quot;, &quot;FOREST LAKE&quot;, &quot;HAWTHOR…
+## $ date_range         &lt;chr&gt; &quot;1st-quarter-2016-17.csv&quot;, &quot;1st-quarter-2016-17.csv&quot;, &quot;1st-quarter-2016-17.csv&quot;, &quot;1st-quarter-2016-17.csv&quot;, &quot;1st-quart…
+## $ responsible_office &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ city               &lt;chr&gt; &quot;Brisbane&quot;, &quot;Brisbane&quot;, &quot;Brisbane&quot;, &quot;Brisbane&quot;, &quot;Brisbane&quot;, &quot;Brisbane&quot;, &quot;Brisbane&quot;, &quot;Brisbane&quot;, &quot;Brisbane&quot;, &quot;Brisbane&quot;…</code></pre>
+<pre class="r"><code>brisbane_complaints &lt;- read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-21/brisbane_complaints.csv&#39;, 
+                                       col_types = cols(responsible_office = col_character()))</code></pre>
+<pre class="r"><code>outcomes &lt;- outcomes %&gt;% 
+  pivot_longer(
+    c(ACT, NSW, NT, QLD, SA, TAS, VIC, WA), 
+    names_to=&quot;region&quot;, 
+    values_to=&quot;count&quot;
+    ) %&gt;% 
+  select(-Total)</code></pre>
+</div>
+<div id="exploration-loop-1" class="section level1">
+<h1>Exploration Loop 1</h1>
+<p>I wonder how the number of euthanized animals varies by animal type and region.</p>
+<pre class="r"><code>outcomes %&gt;% 
+  ggplot() +
+  geom_col(aes(year, count, fill = animal_type)) +
+  facet_grid(rows = vars(region), cols = vars(outcome))</code></pre>
+<pre><code>## Warning: Removed 14 rows containing missing values (position_stack).</code></pre>
+<div class="figure fullwidth">
+<img src="a-tidy-analysis-of-australian-animal-outcomes_files/figure-html/unnamed-chunk-5-1.png" alt=" " width="672"  />
+<p class="caption marginnote shownote">
+</p>
+</div>
+<p>That’s not helpful. Let’s drop year entirely and just look at the distributions across animal type and region.</p>
+<pre class="r"><code>outcomes %&gt;% 
+  count(region, outcome, animal_type, wt = count) %&gt;%
+  ggplot() +
+  geom_col(aes(animal_type, n, fill = animal_type)) +
+  facet_grid(rows = vars(region), cols = vars(outcome)) </code></pre>
+<div class="figure fullwidth">
+<img src="a-tidy-analysis-of-australian-animal-outcomes_files/figure-html/unnamed-chunk-6-1.png" alt=" " width="672"  />
+<p class="caption marginnote shownote">
+</p>
+</div>
+<p>Still no good. Let’s just graph the number of each outcome and facet by region, fill by animal type.</p>
+<pre class="r"><code>outcomes %&gt;% 
+  count(region, outcome, animal_type, wt = count) %&gt;%
+  ggplot(aes(outcome, n, fill = animal_type)) +
+  geom_col() +
+  coord_flip() +
+  facet_wrap(~ region)</code></pre>
+<div class="figure fullwidth">
+<img src="a-tidy-analysis-of-australian-animal-outcomes_files/figure-html/unnamed-chunk-7-1.png" alt=" " width="672"  />
+<p class="caption marginnote shownote">
+</p>
+</div>
+<p>It looks like most of the data is in QLD, and we have another table that contains complaints from Brisbane, which is in QLD. Let’s see if we can join the data to zoom in on QLD/Brisbane.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
