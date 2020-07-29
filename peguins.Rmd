@@ -1,0 +1,215 @@
+---
+title: "Penguins"
+date: "`r Sys.Date()`"
+output:
+  tufte::tufte_html: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+# Import and Tidy
+
+```{r}
+tuesdata <- tidytuesdayR::tt_load('2020-07-28')
+penguins <- tuesdata$penguins
+glimpse(penguins)
+```
+
+Let's convert chars to factors.
+
+```{r}
+penguins <- penguins %>% 
+  mutate(species = factor(species), 
+         island = factor(island), 
+         sex = factor(sex))
+glimpse(penguins)
+```
+
+# Exploration Loop 1
+
+How does species affect bill_length_mm?
+
+```{r}
+library(ggridges)
+library(patchwork)
+
+common_theme <- theme(axis.title.y = element_blank())
+
+length_by_species <- penguins %>% 
+  ggplot(aes(bill_length_mm, species, fill = species)) +
+  geom_density_ridges() +
+  theme_economist() +
+  labs(x = "Bill Length (mm)") +
+  common_theme
+
+depth_by_species <- penguins %>% 
+  ggplot(aes(bill_depth_mm, species, fill = species)) +
+  geom_density_ridges() +
+  theme_economist() +
+  labs(x = "Bill Depth (mm)") +
+  common_theme
+
+weight_by_species <- penguins %>% 
+  ggplot(aes(flipper_length_mm, species, fill = species)) +
+  geom_density_ridges() 
+
+length_by_species / depth_by_species / weight_by_species
+```
+What about bill_depth_mm?
+
+```{r}
+penguins %>% 
+  ggplot(aes(bill_depth_mm)) +
+  geom_histogram(binwidth = 2)
+
+penguins %>% 
+  ggplot(aes(species, bill_depth_mm)) +
+  geom_boxplot()
+```
+
+That's interesting. Looks like depth and length are inversely correlated. Let's confirm.
+
+```{r}
+penguins %>% 
+  ggplot(aes(bill_length_mm, bill_depth_mm)) +
+  geom_point() +
+  facet_wrap(~ species)
+```
+
+Not really if we separate out the effect of species.
+
+How does sex affect bill_depth and length?
+
+```{r}
+penguins %>% 
+  filter(!is.na(sex)) %>% 
+  ggplot(aes(sex, bill_depth_mm)) +
+  geom_boxplot()
+
+penguins %>% 
+  filter(!is.na(sex)) %>% 
+  ggplot(aes(sex, bill_length_mm)) +
+  geom_boxplot()
+```
+
+What about body mass?
+
+```{r}
+library(ggthemes)
+penguins %>% 
+  filter(!is.na(sex)) %>% 
+  ggplot(aes(sex, body_mass_g)) +
+  geom_boxplot() +
+  theme_economist()
+```
+
+Can we create a model that can predict sex based on bill_length, depth, weight, and species?
+
+Perhaps better: can the model predict bill_length from species?
+
+```{r}
+penguins %>% 
+  count(year)
+```
+
+```{r}
+library(cowplot)
+
+p <- ggplot(mtcars, aes(disp, mpg)) + 
+  geom_point(size = 1.5, color = "blue") +
+  theme_cowplot(12)
+
+
+image <-ggplot() +
+  geom_blank() +
+  theme(rect = element_blank())
+
+right <- ggdraw() + draw_image("./penguin.png")
+```
+
+
+```{r}
+penguins %>% 
+  filter(species == "Gentoo") %>% 
+  ggplot(aes(flipper_length_mm)) +
+  geom_histogram(binwidth = 5) +
+  theme_economist()
+
+penguins %>% 
+  filter(species == "Adelie") %>% 
+  ggplot(aes(flipper_length_mm)) +
+  geom_histogram(binwidth = 5) +
+  theme_economist()
+
+penguins %>% 
+  filter(species == "Chinstrap") %>% 
+  ggplot(aes(flipper_length_mm)) +
+  geom_histogram(binwidth = 5) +
+  theme_economist()
+```
+
+
+# Exploration Loop 2: Changes over time
+
+```{r message = F}
+library(GGally)
+glimpse(penguins)
+penguins %>% 
+  filter(!is.na(sex)) %>% 
+  ggpairs(
+    aes(color = species),
+    columns = c(
+      "species",
+      "bill_length_mm",
+      "bill_depth_mm",
+      "body_mass_g",
+      "flipper_length_mm",
+      "sex"
+    ),
+    columnLabels = c("species",
+                     "bill length",
+                     "bill depth",
+                     "body mass", 
+                     "flipper length",
+                     "sex"))
+
+# penguins %>% 
+#   ggplot(aes(body_mass_g, flipper_length_mm)) +
+#   geom_point()
+```
+
+```{r fig.asp=2}
+
+bm_flipper_length <- penguins %>% 
+  ggplot(aes(body_mass_g, flipper_length_mm, color = species)) +
+  geom_point() +
+  labs(title = "...longer flippers", y = "Flipper Length (mm)", x = element_blank())
+
+bm_bill_length <- penguins %>% 
+  ggplot(aes(body_mass_g, bill_length_mm, color = species)) +
+  geom_point() +
+  labs(title = "...longer beaks", y = "Beak Length (mm)", x = element_blank())
+
+bm_bill_depth <- penguins %>% 
+  ggplot(aes(body_mass_g, bill_depth_mm, color = species)) +
+  geom_point() +
+  labs(title = "...and deeper beaks", 
+       subtitle = "(controlling for the impact of species)", 
+       y = "Beak Depth (mm)", 
+       x = "Body Mass (g)")
+
+(bm_flipper_length / bm_bill_length / bm_bill_depth / guide_area()) +
+  plot_annotation(
+    title = "With these penguins, more mass often means...",
+    caption = "Data from Tidy Tuesday Week 31"
+    ) +
+  plot_layout(guides = "collect") &
+  theme_economist() &
+  theme(axis.title.x = element_text(face = "bold.italic", margin = margin(t = 30)))
+
+ggsave("my-plot.png")
+```
+
